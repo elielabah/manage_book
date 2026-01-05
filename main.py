@@ -29,14 +29,9 @@ async def get_book(id:int, session:Session=Depends(yield_session)):
 async def get_booklist(session:Session=Depends(yield_session)):
     return await services.get_booklist(session=session)
 
-@app.delete("/books/{id}")
-async def delete_books(id:int):
-    if id not in books:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"le livre avec l'id {id} n'a pas été trouvé ou n'existe pas")
-    else:
-        del books[id]
-        if id not in books:
-            return JSONResponse(content={"message":"Ce livre a bien été supprimé"},status_code=status.HTTP_204_NO_CONTENT,media_type="application/json")
+@app.delete("/books/{id}",status_code=status.HTTP_204_NO_CONTENT)
+async def delete_book(id:int, session:Session=Depends(yield_session)):
+    return await services.delete_book(id=id, session=session)
 
 @app.put("/books/{id}",response_model=BookModel)
 async def update_book(id:int, book:BookUpdateModel):

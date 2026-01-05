@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 from sqlalchemy import Select
 from schemas import BookCreateModel
 from models import Book
@@ -24,3 +25,8 @@ async def get_booklist(session:Session):
     result=session.execute(statement=stm)
     books=result.scalars().all()
     return books
+
+async def delete_book(id:int, session:Session):
+   book=await get_book(id=id, session=session)
+   session.delete(book)
+   session.commit()
