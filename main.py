@@ -1,7 +1,10 @@
-from fastapi import FastAPI, status, HTTPException
+from fastapi import Depends, FastAPI, status, HTTPException
 from fastapi.responses import JSONResponse
+from dbconfig import yield_session
 from schemas import BookCreateModel, BookModel, BookPatchModel, BookUpdateModel
 from data import books
+import services
+from sqlalchemy.orm import Session
 
 app=FastAPI(root_path = "/api")
 
@@ -15,20 +18,16 @@ async def calculate(x:int,y:int):
     return {"result":z}
 
 @app.post("/books",response_model=BookModel)
-async def create_book(book:BookCreateModel):
-    book_created=BookModel(id=1, name=book.name,description=book.description,nbrePages=book.nbrePages)
-    return book_created
-
+async def create_book(book:BookCreateModel,session:Session=Depends(yield_session)):
+   return await services.create_book(book=book, session=session)
+    
 @app.get("/books/{id}",response_model=BookModel)
-async def get_book(id:int):
-    book=books.get(id)
-    if book is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ce livre n'a pas été trouvé")
-    return book
+async def get_book(id:int, session:Session=Depends(yield_session)):
+    return await services.get_book(id=id, session=session)
 
 @app.get("/books",response_model=list[BookModel])
-async def get_booklist():
-    return books.values()
+async def get_booklist(session:Session=Depends(yield_session)):
+    return await services.get_booklist(session=session)
 
 @app.delete("/books/{id}")
 async def delete_books(id:int):

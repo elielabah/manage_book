@@ -1,0 +1,15 @@
+installation de alembic 
+#pip install alembic
+
+commande pour initialiser alembic 
+#alembic init alembic 
+
+configuration de l'URL à travers sqlalchemy.url dans le fichier "alembic.ini"
+
+ajout des metadata dans alembic/env.py
+
+commande pour créer des migrations alembic 
+#alembic revision --autogenerate -m "message de commit" 
+
+appliquer les migrations : 
+#alembic upgrade head
